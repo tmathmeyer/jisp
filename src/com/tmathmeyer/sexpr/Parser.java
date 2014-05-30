@@ -14,24 +14,13 @@ public class Parser
 {
     public static void main(String... args) throws Exception
     {
-        String f = "(+ (+ (+ 1 2) (+ 3 4)) (+ (+ 5 6) (+ 7 8)))";
-        String k = "(+ 1 2 3 4 5 6)";
-        String m = "(+ 1 (* 2 3))";
-        
-        String L = "(L (x y) (+ x y))";
-        String def = "(def name (+ 3 2))";
-        
-        String empty = "(first (cons 1 empty))";
-        
-        String omfg = "(let ten (* 2 5) (let hundo (* ten ten) (hundo)))";
-        
         String maybe = "(program (defun huh +) (huh 1 2))";
         
         new Parser().parse(maybe);
     }
     
     
-    public void parse(String s) throws Exception
+    public Object parse(String s) throws Exception
     {
         LinkedList<Token> tok = tokeniser(s);
         
@@ -43,11 +32,13 @@ public class Parser
         }
         
         t.lock();
-        t.print(0);
+        //t.print(0);
         Map<String, Func> ctx = Context.getDefaultHashMap();
         try
         {
-            System.out.println(t.eval(ctx));
+            Object a = t.eval(ctx);
+            //System.out.println(a);
+            return a;
         }
         catch(Exception e)
         {
@@ -55,6 +46,7 @@ public class Parser
             {
                 System.out.println("ff : " + ff.getKey());
             }
+            return null;
         }
     }
     
