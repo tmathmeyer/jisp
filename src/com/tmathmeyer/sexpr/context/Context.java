@@ -50,6 +50,7 @@ public class Context
         m.put("*", makeMult(null));
         m.put("cons", makeCons(null,null));
         m.put("empty", makeEmpty());
+        m.put("let", makeLet(null, null, null));
 
 
         return m;
@@ -248,6 +249,90 @@ public class Context
                 return "empty";
             }
 
+        };
+    }
+    
+    public static Func makeLet(final String c, final Func eve, final Func evn)
+    {
+        return new Func(){
+            
+            Func evaluation = evn;
+            String name = c;
+            Func evaluee = eve;
+            
+            @Override
+            public int getParamCount()
+            {
+                return 0;
+            }
+
+            @Override
+            public Object eval(Map<String, Func> map) throws Exception
+            {
+                if (map != null)
+                {
+                    map.put(name, evaluee);
+                }
+                return evaluation.eval(map);
+            }
+
+            @Override
+            public Func addParam(Func func) throws Exception
+            {
+                if (name == null)
+                {
+                    return makeLet((String) func.eval(null), null, null);
+                }
+                if (evaluee == null)
+                {
+                    return makeLet(name, func, null);
+                }
+                if (evaluation == null)
+                {
+                    return makeLet(name, evaluee, func);
+                }
+                throw new Exception();
+            }
+
+            @Override
+            public String getName()
+            {
+                return "empty";
+            }
+
+        };
+    }
+
+
+
+    public static Func stringFunc(final String string)
+    {
+        return new Func()
+        {
+
+            @Override
+            public int getParamCount()
+            {
+                return 0;
+            }
+
+            @Override
+            public Object eval(Map<String, Func> map) throws Exception
+            {
+                return string;
+            }
+
+            @Override
+            public Func addParam(Func func) throws Exception
+            {
+                return this;
+            }
+
+            @Override
+            public String getName()
+            {
+                return "String";
+            }
         };
     }
 }

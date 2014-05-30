@@ -56,7 +56,12 @@ public class EmptyTokenTree implements TokenTree
         
         for(int i = 1; i < parts.length; i++)
         {
-            f = f.addParam(context.get(parts[i]));
+            Func c = context.get(parts[i]);
+            if (c == null)
+            {
+                c = Context.stringFunc(parts[i]);
+            }
+            f = f.addParam(c);
         }
         
         return f.eval(context);

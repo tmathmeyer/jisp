@@ -77,12 +77,17 @@ public class FillingTokenTree implements TokenTree
         
         if (f == null)
         {
-            return null;
+            f = Context.stringFunc(parts[0]);
         }
         
         for(int i = 1; i < parts.length; i++)
         {
-            f = f.addParam(context.get(parts[i]));
+            Func c = context.get(parts[i]);
+            if (c == null)
+            {
+                c = Context.stringFunc(parts[i]);
+            }
+            f = f.addParam(c);
         }
         
         for(TokenTree tt: params)

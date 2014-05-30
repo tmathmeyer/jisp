@@ -20,7 +20,9 @@ public class Parser
         
         String empty = "(cons (cons 1 empty) (cons 2 empty))";
         
-        new Parser().parse(empty);
+        String omfg = "(let ten (* 2 5) (let hundo (* ten ten) (hundo)))";
+        
+        new Parser().parse(omfg);
     }
     
     
