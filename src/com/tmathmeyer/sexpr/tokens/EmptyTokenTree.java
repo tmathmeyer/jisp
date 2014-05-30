@@ -61,7 +61,7 @@ public class EmptyTokenTree implements TokenTree
             {
                 c = Context.stringFunc(parts[i]);
             }
-            f = f.addParam(c);
+            f = f.addParam(c, context);
         }
         
         return f.eval(context);

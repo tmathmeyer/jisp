@@ -14,16 +14,10 @@ public class Context
     {
         Map<String, Func> m = new HashMap<String, Func>();
 
-        for(int i = 0; i < 9; i++)
+        for(int i = 0; i < 10; i++)
         {
             final int j = i;
             m.put(i+"", new Func(){
-
-                @Override
-                public int getParamCount()
-                {
-                    return 0;
-                }
 
                 @Override
                 public Object eval(Map<String, Func> map)
@@ -32,15 +26,9 @@ public class Context
                 }
 
                 @Override
-                public Func addParam(Func func)
+                public Func addParam(Func func, Map<String, Func> ctx) throws Exception
                 {
                     return this;
-                }
-
-                @Override
-                public String getName()
-                {
-                    return ""+j;
                 }
 
             });
@@ -51,7 +39,10 @@ public class Context
         m.put("cons", makeCons(null,null));
         m.put("empty", makeEmpty());
         m.put("let", makeLet(null, null, null));
-
+        m.put("first", makeFirst(null));
+        m.put("defun", makeDefun(null, null));
+        
+        m.put("program", makeProgram(new LinkedList<Func>(), null));
 
         return m;
     }
@@ -73,12 +64,6 @@ public class Context
     {
         return new Func(){
             public List<Integer> sums = deepClone(ints, additional);
-
-            @Override
-            public int getParamCount()
-            {
-                return 0;
-            }
 
             private List<Integer> deepClone(List<Integer> ints, Integer[] additional)
             {
@@ -110,15 +95,9 @@ public class Context
             }
 
             @Override
-            public Func addParam(Func func) throws Exception
+            public Func addParam(Func func, Map<String, Func> ctx) throws Exception
             {    
-                return makePlus(sums, (Integer) func.eval(null));
-            }
-
-            @Override
-            public String getName()
-            {
-                return "plus";
+                return makePlus(sums, (Integer) func.eval(ctx));
             }
 
         };
@@ -128,12 +107,6 @@ public class Context
     {
         return new Func(){
             public List<Integer> sums = deepClone(ints, additional);
-
-            @Override
-            public int getParamCount()
-            {
-                return 0;
-            }
 
             private List<Integer> deepClone(List<Integer> ints, Integer[] additional)
             {
@@ -165,15 +138,9 @@ public class Context
             }
 
             @Override
-            public Func addParam(Func func) throws Exception
+            public Func addParam(Func func, Map<String, Func> ctx) throws Exception
             {    
-                return makeMult(sums, (Integer) func.eval(null));
-            }
-
-            @Override
-            public String getName()
-            {
-                return "multiply";
+                return makeMult(sums, (Integer) func.eval(ctx));
             }
 
         };
@@ -183,11 +150,6 @@ public class Context
     {
         return new Func(){
             
-            @Override
-            public int getParamCount()
-            {
-                return 0;
-            }
 
             @Override
             public Object eval(Map<String, Func> map)
@@ -196,15 +158,9 @@ public class Context
             }
 
             @Override
-            public Func addParam(Func func) throws Exception
+            public Func addParam(Func func, Map<String, Func> ctx) throws Exception
             {    
                 return this;
-            }
-
-            @Override
-            public String getName()
-            {
-                return "empty";
             }
 
         };
@@ -216,12 +172,6 @@ public class Context
             
             Func olist = o;
             Object additional = a;
-            
-            @Override
-            public int getParamCount()
-            {
-                return 0;
-            }
 
             @Override
             public Object eval(Map<String, Func> map) throws Exception
@@ -230,11 +180,11 @@ public class Context
             }
 
             @Override
-            public Func addParam(Func func) throws Exception
+            public Func addParam(Func func, Map<String, Func> ctx) throws Exception
             {
                 if (additional == null)
                 {
-                    return makeCons(null, func.eval(null));
+                    return makeCons(null, func.eval(ctx));
                 }
                 if (olist == null)
                 {
@@ -243,10 +193,29 @@ public class Context
                 throw new Exception();
             }
 
+        };
+    }
+    
+    public static Func makeFirst(final com.tmathmeyer.sexpr.data.List o)
+    {
+        return new Func(){
+            
+            com.tmathmeyer.sexpr.data.List list = o;
+
             @Override
-            public String getName()
+            public Object eval(Map<String, Func> map) throws Exception
             {
-                return "empty";
+                return list.first();
+            }
+
+            @Override
+            public Func addParam(Func func, Map<String, Func> ctx) throws Exception
+            {
+                if (list == null)
+                {
+                    return makeFirst((com.tmathmeyer.sexpr.data.List) func.eval(ctx));
+                }
+                throw new Exception();
             }
 
         };
@@ -260,11 +229,6 @@ public class Context
             String name = c;
             Func evaluee = eve;
             
-            @Override
-            public int getParamCount()
-            {
-                return 0;
-            }
 
             @Override
             public Object eval(Map<String, Func> map) throws Exception
@@ -277,11 +241,11 @@ public class Context
             }
 
             @Override
-            public Func addParam(Func func) throws Exception
+            public Func addParam(Func func, Map<String, Func> ctx) throws Exception
             {
                 if (name == null)
                 {
-                    return makeLet((String) func.eval(null), null, null);
+                    return makeLet((String) func.eval(ctx), null, null);
                 }
                 if (evaluee == null)
                 {
@@ -294,15 +258,71 @@ public class Context
                 throw new Exception();
             }
 
+        };
+    }
+
+    public static Func makeDefun(final String n, final Func eval)
+    {
+        return new Func(){
+            
+            Func evaluation = eval;
+            String name = n;
+            
+
             @Override
-            public String getName()
+            public Object eval(Map<String, Func> map) throws Exception
             {
-                return "empty";
+                if (map != null)
+                {
+                    map.put(name, evaluation);
+                }
+                return evaluation.eval(map);
+            }
+
+            @Override
+            public Func addParam(Func func, Map<String, Func> ctx) throws Exception
+            {
+                if (name == null)
+                {
+                    return makeDefun((String) func.eval(ctx), null);
+                }
+                if (evaluation == null)
+                {
+                    return makeDefun(name, func);
+                }
+                throw new Exception();
             }
 
         };
     }
+    
+    public static Func makeProgram(final LinkedList<Func> list, final Func next)
+    {
+        return new Func(){
+            
+            LinkedList<Func> fxns = new LinkedList<Func>();
+            
+            @Override
+            public Object eval(Map<String, Func> map) throws Exception
+            {
+                Object o = null;
+                for(Func f : fxns)
+                {
+                    o = f.eval(map);
+                }
+                return o;
+            }
 
+            @Override
+            public Func addParam(Func func, Map<String, Func> ctx) throws Exception
+            {
+                fxns.add(func);
+                return this;
+            }
+
+        };
+    }
+    
 
 
     public static Func stringFunc(final String string)
@@ -311,27 +331,15 @@ public class Context
         {
 
             @Override
-            public int getParamCount()
-            {
-                return 0;
-            }
-
-            @Override
             public Object eval(Map<String, Func> map) throws Exception
             {
                 return string;
             }
 
             @Override
-            public Func addParam(Func func) throws Exception
+            public Func addParam(Func func, Map<String, Func> ctx) throws Exception
             {
                 return this;
-            }
-
-            @Override
-            public String getName()
-            {
-                return "String";
             }
         };
     }

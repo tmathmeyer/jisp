@@ -1,8 +1,11 @@
 package com.tmathmeyer.sexpr;
 
+import java.util.Map;
 import java.util.LinkedList;
+import java.util.Map.Entry;
 
 import com.tmathmeyer.sexpr.context.Context;
+import com.tmathmeyer.sexpr.context.Func;
 import com.tmathmeyer.sexpr.tokens.EmptyTokenTree;
 import com.tmathmeyer.sexpr.tokens.Token;
 import com.tmathmeyer.sexpr.tokens.TokenTree;
@@ -18,11 +21,13 @@ public class Parser
         String L = "(L (x y) (+ x y))";
         String def = "(def name (+ 3 2))";
         
-        String empty = "(cons (cons 1 empty) (cons 2 empty))";
+        String empty = "(first (cons 1 empty))";
         
         String omfg = "(let ten (* 2 5) (let hundo (* ten ten) (hundo)))";
         
-        new Parser().parse(omfg);
+        String maybe = "(program (defun huh +) (huh 1 2))";
+        
+        new Parser().parse(maybe);
     }
     
     
@@ -38,8 +43,19 @@ public class Parser
         }
         
         t.lock();
-        //t.print(0);
-        System.out.println(t.eval(Context.getDefaultHashMap()));
+        t.print(0);
+        Map<String, Func> ctx = Context.getDefaultHashMap();
+        try
+        {
+            System.out.println(t.eval(ctx));
+        }
+        catch(Exception e)
+        {
+            for(Entry<String, Func> ff : ctx.entrySet())
+            {
+                System.out.println("ff : " + ff.getKey());
+            }
+        }
     }
     
     public LinkedList<Token> expand(LinkedList<Token> compressed)

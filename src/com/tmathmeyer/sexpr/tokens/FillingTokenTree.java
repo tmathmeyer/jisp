@@ -87,7 +87,7 @@ public class FillingTokenTree implements TokenTree
             {
                 c = Context.stringFunc(parts[i]);
             }
-            f = f.addParam(c);
+            f = f.addParam(c, context);
         }
         
         for(TokenTree tt: params)
@@ -96,29 +96,18 @@ public class FillingTokenTree implements TokenTree
             f = f.addParam(new Func(){
 
                 @Override
-                public int getParamCount()
-                {
-                    return 0;
-                }
-
-                @Override
                 public Object eval(Map<String, Func> map) throws Exception
                 {
                     return ttf.eval(context);
                 }
 
                 @Override
-                public Func addParam(Func func)
+                public Func addParam(Func func, Map<String, Func> ctx) throws Exception
                 {
                     return this;
                 }
-
-                @Override
-                public String getName()
-                {
-                    return "I dunno";
-                }
-            });
+                
+            }, context);
         }
         
         return f.eval(context);
