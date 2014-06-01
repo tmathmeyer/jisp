@@ -94,6 +94,8 @@ public class FillingTokenTree implements TokenTree
         {
             final TokenTree ttf = tt;
             f = f.addParam(new Func(){
+                
+                public String expr = ttf.getExpr();
 
                 @Override
                 public Object eval(Map<String, Func> map) throws Exception
@@ -107,10 +109,24 @@ public class FillingTokenTree implements TokenTree
                     return this;
                 }
                 
+                @Override
+                public String getExpr()
+                {
+                    return expr;
+                }
+                
             }, context);
         }
         
-        return f.eval(context);
+        Object res = f.eval(context);
+        
+        return res;
+    }
+
+    @Override
+    public String getExpr()
+    {
+        return func.tok;
     }
 
 }

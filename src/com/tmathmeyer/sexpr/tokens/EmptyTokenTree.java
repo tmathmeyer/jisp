@@ -67,4 +67,10 @@ public class EmptyTokenTree implements TokenTree
         return f.eval(context);
     }
 
+    @Override
+    public String getExpr()
+    {
+        return base.tok;
+    }
+
 }

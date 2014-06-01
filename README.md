@@ -5,11 +5,11 @@ JISP: a java lisp (scheme) interpreter
 basic scheming to accomplish:
 
  - [x] basic math
- - [ ] lists
+ - [x] lists
      - [x] cons
      - [x] empty
-     - [ ] first
+     - [x] first
      - [ ] rest
  - [x] let
- - [ ] lambda
+ - [x] lambda
  - [x] strings

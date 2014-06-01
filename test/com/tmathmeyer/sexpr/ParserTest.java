@@ -85,5 +85,43 @@ public class ParserTest
         assertEquals(lotsR.toString(), "[1,2,3,4]");
         assertEquals(retR, 2);
     }
+    
+    @Test
+    public void beginTest() throws Exception
+    {
+        String begin = "(begin (+ 1 2) (+ 2 3) (+ 3 4))";
+        Object beginR = p.parse(begin);
+        
+        assertEquals(beginR, 7);
+    }
+    
+    @Test
+    public void defunTest() throws Exception
+    {
+        String def = "(begin (defun add +) (add 2 3) (add 3 4))";
+        String redef = "(begin (defun M +) (defun M *) (* 1 2) (+ 3 4))";
+        
+        Object defR = p.parse(def);
+        Object redefR = p.parse(redef);
+        
+        assertEquals(defR, 7);
+        assertEquals(redefR, 12);
+    }
+    
+    @Test
+    public void lambdaTest() throws Exception
+    {
+        String lambda = "(begin (defun add (λ (x y) (+ x y))) (add 1 2))";
+        Object lambdaR = p.parse(lambda);
+        assertEquals(lambdaR, 3);
+    }
+    
+    @Test
+    public void letTest() throws Exception
+    {
+        String let = "(let ten (+ 5 5) (* ten ten))";
+        Object letR = p.parse(let);
+        assertEquals(letR, 100);
+    }
 
 }

@@ -14,9 +14,13 @@ public class Parser
 {
     public static void main(String... args) throws Exception
     {
-        String maybe = "(program (defun huh +) (huh 1 2))";
+        //String maybe = "(program (defun huh (+ 2 1)) (+ huh 2))";
         
-        new Parser().parse(maybe);
+        String lambda = "(begin (defun add (λ (x y) (+ x y))) (defun add2 +) (add 1 2)) ";
+        
+        String recurse = "(begin (defun map (λ (x y z) (+ (* x y) (* x z)))) (map 2 2 3))";
+        
+        new Parser().parse(lambda);
     }
     
     
@@ -44,9 +48,11 @@ public class Parser
         {
             for(Entry<String, Func> ff : ctx.entrySet())
             {
-                System.out.println("ff : " + ff.getKey());
+                System.out.print(ff.getKey() + " : ");
+                System.out.println(ff.getValue().getExpr());
             }
-            return null;
+            e.printStackTrace();
+            throw e;
         }
     }
     

@@ -14,10 +14,11 @@ public class Context
     {
         Map<String, Func> m = new HashMap<String, Func>();
 
-        for(int i = 0; i < 10; i++)
+        for (int i = 0; i < 10; i++)
         {
             final int j = i;
-            m.put(i+"", new Func(){
+            m.put(i + "", new Func()
+            {
 
                 @Override
                 public Object eval(Map<String, Func> map)
@@ -31,28 +32,33 @@ public class Context
                     return this;
                 }
 
+                @Override
+                public String getExpr()
+                {
+                    return j + "";
+                }
+
             });
         }
 
         m.put("+", makePlus(null));
         m.put("*", makeMult(null));
-        m.put("cons", makeCons(null,null));
+        m.put("cons", makeCons(null, null));
         m.put("empty", makeEmpty());
         m.put("let", makeLet(null, null, null));
         m.put("first", makeFirst(null));
         m.put("defun", makeDefun(null, null));
-        
-        m.put("program", makeProgram(new LinkedList<Func>(), null));
+
+        m.put("λ", makeLambda(null, null));
+        m.put("begin", makeBegin(new LinkedList<Func>(), null));
 
         return m;
     }
 
-
-
     public static String mult(String s, int t)
     {
         StringBuilder sb = new StringBuilder(s.length() * t);
-        for(int i=0; i<t; i++) 
+        for (int i = 0; i < t; i++)
         {
             sb.append(s);
         }
@@ -62,13 +68,14 @@ public class Context
 
     public static Func makePlus(final List<Integer> ints, final Integer... additional)
     {
-        return new Func(){
+        return new Func()
+        {
             public List<Integer> sums = deepClone(ints, additional);
 
             private List<Integer> deepClone(List<Integer> ints, Integer[] additional)
             {
                 List<Integer> n = new LinkedList<Integer>();
-                for(Integer i : additional)
+                for (Integer i : additional)
                 {
                     n.add(i);
                 }
@@ -76,7 +83,7 @@ public class Context
                 {
                     return n;
                 }
-                for(Integer i : ints)
+                for (Integer i : ints)
                 {
                     n.add(i);
                 }
@@ -87,7 +94,7 @@ public class Context
             public Object eval(Map<String, Func> map)
             {
                 int sum = 0;
-                for(Integer i: sums)
+                for (Integer i : sums)
                 {
                     sum += i;
                 }
@@ -96,22 +103,29 @@ public class Context
 
             @Override
             public Func addParam(Func func, Map<String, Func> ctx) throws Exception
-            {    
+            {
                 return makePlus(sums, (Integer) func.eval(ctx));
+            }
+
+            @Override
+            public String getExpr()
+            {
+                return "+";
             }
 
         };
     }
-    
+
     public static Func makeMult(final List<Integer> ints, final Integer... additional)
     {
-        return new Func(){
+        return new Func()
+        {
             public List<Integer> sums = deepClone(ints, additional);
 
             private List<Integer> deepClone(List<Integer> ints, Integer[] additional)
             {
                 List<Integer> n = new LinkedList<Integer>();
-                for(Integer i : additional)
+                for (Integer i : additional)
                 {
                     n.add(i);
                 }
@@ -119,7 +133,7 @@ public class Context
                 {
                     return n;
                 }
-                for(Integer i : ints)
+                for (Integer i : ints)
                 {
                     n.add(i);
                 }
@@ -130,7 +144,7 @@ public class Context
             public Object eval(Map<String, Func> map)
             {
                 int sum = 1;
-                for(Integer i: sums)
+                for (Integer i : sums)
                 {
                     sum *= i;
                 }
@@ -139,17 +153,23 @@ public class Context
 
             @Override
             public Func addParam(Func func, Map<String, Func> ctx) throws Exception
-            {    
+            {
                 return makeMult(sums, (Integer) func.eval(ctx));
+            }
+
+            @Override
+            public String getExpr()
+            {
+                return "*";
             }
 
         };
     }
-    
+
     public static Func makeEmpty()
     {
-        return new Func(){
-            
+        return new Func()
+        {
 
             @Override
             public Object eval(Map<String, Func> map)
@@ -159,17 +179,24 @@ public class Context
 
             @Override
             public Func addParam(Func func, Map<String, Func> ctx) throws Exception
-            {    
+            {
                 return this;
+            }
+
+            @Override
+            public String getExpr()
+            {
+                return "empty";
             }
 
         };
     }
-    
+
     public static Func makeCons(final Func o, final Object a)
     {
-        return new Func(){
-            
+        return new Func()
+        {
+
             Func olist = o;
             Object additional = a;
 
@@ -193,13 +220,20 @@ public class Context
                 throw new Exception();
             }
 
+            @Override
+            public String getExpr()
+            {
+                return "cons";
+            }
+
         };
     }
-    
+
     public static Func makeFirst(final com.tmathmeyer.sexpr.data.List o)
     {
-        return new Func(){
-            
+        return new Func()
+        {
+
             com.tmathmeyer.sexpr.data.List list = o;
 
             @Override
@@ -218,17 +252,23 @@ public class Context
                 throw new Exception();
             }
 
+            @Override
+            public String getExpr()
+            {
+                return "first";
+            }
+
         };
     }
-    
+
     public static Func makeLet(final String c, final Func eve, final Func evn)
     {
-        return new Func(){
-            
+        return new Func()
+        {
+
             Func evaluation = evn;
             String name = c;
             Func evaluee = eve;
-            
 
             @Override
             public Object eval(Map<String, Func> map) throws Exception
@@ -258,22 +298,34 @@ public class Context
                 throw new Exception();
             }
 
+            @Override
+            public String getExpr()
+            {
+                return "let";
+            }
+
         };
     }
 
     public static Func makeDefun(final String n, final Func eval)
     {
-        return new Func(){
-            
+        return new Func()
+        {
+
             Func evaluation = eval;
             String name = n;
-            
 
             @Override
             public Object eval(Map<String, Func> map) throws Exception
             {
                 if (map != null)
                 {
+                    if ("λ".equals(evaluation.getExpr()))
+                    {
+                        evaluation = (Func) evaluation.eval(map);
+                        map.put(name, evaluation);
+                        return evaluation;
+                    }
                     map.put(name, evaluation);
                 }
                 return evaluation.eval(map);
@@ -284,7 +336,14 @@ public class Context
             {
                 if (name == null)
                 {
-                    return makeDefun((String) func.eval(ctx), null);
+                    if ("string".equals(func.getExpr()))
+                    {
+                        return makeDefun((String) func.eval(ctx), null);
+                    }
+                    else
+                    {
+                        return makeDefun(func.getExpr(), null);
+                    }
                 }
                 if (evaluation == null)
                 {
@@ -293,20 +352,27 @@ public class Context
                 throw new Exception();
             }
 
+            @Override
+            public String getExpr()
+            {
+                return "defun";
+            }
+
         };
     }
-    
-    public static Func makeProgram(final LinkedList<Func> list, final Func next)
+
+    public static Func makeBegin(final LinkedList<Func> list, final Func next)
     {
-        return new Func(){
-            
+        return new Func()
+        {
+
             LinkedList<Func> fxns = new LinkedList<Func>();
-            
+
             @Override
             public Object eval(Map<String, Func> map) throws Exception
             {
                 Object o = null;
-                for(Func f : fxns)
+                for (Func f : fxns)
                 {
                     o = f.eval(map);
                 }
@@ -320,10 +386,82 @@ public class Context
                 return this;
             }
 
+            @Override
+            public String getExpr()
+            {
+                return "begin";
+            }
+
         };
     }
-    
 
+    public static Func makeLambda(final Func p, final Func b)
+    {
+
+        return new Func()
+        {
+            Func params = p;
+            Func body = b;
+
+            @Override
+            public Object eval(Map<String, Func> map) throws Exception
+            {
+                // System.out.println(params.getExpr());
+                // System.out.println(body.getExpr());
+                return new Func()
+                {
+                    String[] functions = params.getExpr().split(" ");
+                    int fxnid = 0;
+
+                    @Override
+                    public Object eval(Map<String, Func> map) throws Exception
+                    {
+                        return body.eval(map);
+                    }
+
+                    @Override
+                    public Func addParam(Func func, Map<String, Func> ctx) throws Exception
+                    {
+                        if (fxnid < functions.length)
+                        {
+                            ctx.put(functions[fxnid++], func);
+                        } 
+                        else
+                        {
+                            throw new Exception();
+                        }
+                        return this;
+                    }
+
+                    @Override
+                    public String getExpr()
+                    {
+                        return body.getExpr().split(" ")[0];
+                    }
+                };
+            }
+
+            @Override
+            public Func addParam(Func func, Map<String, Func> ctx) throws Exception
+            {
+                if (params == null)
+                {
+                    return makeLambda(func, body);
+                }
+                if (body == null)
+                {
+                    return makeLambda(params, func);
+                }
+                throw new Exception();
+            }
+
+            @Override
+            public String getExpr()
+            {
+                return "lambda";
+            }
+        };
+    }
 
     public static Func stringFunc(final String string)
     {
@@ -341,6 +479,13 @@ public class Context
             {
                 return this;
             }
+
+            @Override
+            public String getExpr()
+            {
+                return "string";
+            }
         };
     }
+
 }

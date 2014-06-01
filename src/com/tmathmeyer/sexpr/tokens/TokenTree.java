@@ -11,4 +11,5 @@ public interface TokenTree
     Object eval(Map<String, Func> context) throws Exception;
 
     void print(int i);
+    String getExpr();
 }
