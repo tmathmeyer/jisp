@@ -13,3 +13,6 @@ basic scheming to accomplish:
  - [x] let
  - [x] lambda
  - [x] strings
+ - [ ] booleans
+ - [ ] conditionals
+ - [x] program definition
