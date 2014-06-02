@@ -9,7 +9,7 @@ basic scheming to accomplish:
      - [x] cons
      - [x] empty
      - [x] first
-     - [ ] rest
+     - [x] rest
  - [x] let
  - [x] lambda
  - [x] strings

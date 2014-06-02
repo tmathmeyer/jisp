@@ -45,4 +45,10 @@ public class Empty implements List
         }
         return content;
     }
+
+    @Override
+    public List rest()
+    {
+        return this;
+    }
 }

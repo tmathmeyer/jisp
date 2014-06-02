@@ -29,6 +29,18 @@ public class ParserTest
     }
     
     @Test
+    public void booleanTest() throws Exception
+    {
+        String truth = "(#t)";
+        Object truthR = p.parse(truth);
+        assertTrue(truthR.equals(true));
+        
+        String lie = "(#f)";
+        Object lieR = p.parse(lie);
+        assertTrue(lieR.equals(false));
+    }
+    
+    @Test
     public void multiplicationTest() throws Exception
     {
         String testcase = "(* 3 4)";
@@ -71,10 +83,10 @@ public class ParserTest
     @Test
     public void listTest() throws Exception
     {
-        String empty = "(empty)";
-        String cons = "(cons 2 empty)";
-        String lots = "(cons 1 (cons 2 (cons 3 (cons 4 empty))))";
-        String ret = "(first (cons 2 empty))";
+        String empty = "(∅)";
+        String cons = "(cons 2 ∅)";
+        String lots = "(cons 1 (cons 2 (cons 3 (cons 4 ∅))))";
+        String ret = "(first (cons 2 ∅))";
         Object emptyR = p.parse(empty);
         Object consR = p.parse(cons);
         Object lotsR = p.parse(lots);
@@ -115,13 +127,40 @@ public class ParserTest
         Object lambdaR = p.parse(lambda);
         assertEquals(lambdaR, 3);
     }
-    
+
     @Test
     public void letTest() throws Exception
     {
         String let = "(let ten (+ 5 5) (* ten ten))";
         Object letR = p.parse(let);
         assertEquals(letR, 100);
+    }
+    
+    @Test
+    public void emptyTest() throws Exception
+    {
+        String identity = "(empty ∅)";
+        String nested = "(empty (rest (cons 4 ∅)))";
+        String fail = "(empty 4)";
+        
+        Object identityR = p.parse(identity);
+        Object nestedR = p.parse(nested);
+        Object failR = p.parse(fail);
+        
+        assertEquals(identityR, true);
+        assertEquals(nestedR, true);
+        assertEquals(failR, false);
+        
+    }
+
+    @Test
+    public void recursionTest() throws Exception
+    {
+        String realrange = 
+            "(begin (defun range (λ (start end) (cond (= start end) (∅) (#t) (let next (+ 1 start) (cons next (range next end)))))) (range 0 (* 2 5)))";
+
+        Object rangeResult = p.parse(realrange);
+        assertEquals(rangeResult.toString(), "[1,2,3,4,5,6,7,8,9,10]");
     }
 
 }

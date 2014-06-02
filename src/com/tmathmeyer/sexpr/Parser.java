@@ -14,13 +14,28 @@ public class Parser
 {
     public static void main(String... args) throws Exception
     {
-        //String maybe = "(program (defun huh (+ 2 1)) (+ huh 2))";
+        String emptytest = "(empty (first (cons 3 ∅)))";
         
-        String lambda = "(begin (defun add (λ (x y) (+ x y))) (defun add2 +) (add 1 2)) ";
+        String recursion = "(begin (defun inc (λ (aaa) (+ 1 aaa))) (inc (inc 1))) ";
         
-        String recurse = "(begin (defun map (λ (x y z) (+ (* x y) (* x z)))) (map 2 2 3))";
+        String map = "(defun linc (λ (lis fxn) (cond (empty lis) (∅) (#t) (let fir (first lis) (let res (rest lis) (let incr (fxn fir) (cons incr (linc res))))))))";
+        String inc = "(defun inc (λ (ins) (+ 1 ins)))";
         
-        new Parser().parse(lambda);
+        String range = "(defun range (λ (siz) (cond (= siz 9) (∅) (#t) (let nsiz (+ 1 siz) (cons siz (range nsiz))))))";
+        
+        //String fun = "(begin "+map+" ("
+        
+        String callRange = "(begin "+range+" (range 0))";
+        String callLinc = "(begin " + map + " " + inc + " " + range + "(linc (range 0) inc))";
+        
+        String huh = "(cond (= 2 10) (+ 2 2) (= 2 2) (∅))";
+        
+        String realrange = "(begin (defun range (λ (start end) (cond (= start end) (∅) (#t) (let next (+ 1 start) (cons next (range next end)))))) (range 0 (* 4 5)))";
+        
+        String heh = "(begin (defun range (λ (start end) (cond (= start end) (∅) (#t) (let next (+ 1 start) (cons next (range next end)))))) (let 100 (* 5 5 4) (range 0 100)))";
+        
+        
+        new Parser().parse(heh);
     }
     
     
@@ -41,7 +56,7 @@ public class Parser
         try
         {
             Object a = t.eval(ctx);
-            //System.out.println(a);
+            System.out.println(a);
             return a;
         }
         catch(Exception e)

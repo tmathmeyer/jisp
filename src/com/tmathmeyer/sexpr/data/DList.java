@@ -60,4 +60,10 @@ public class DList implements List
         }
         return content;
     }
+
+    @Override
+    public List rest()
+    {
+        return rest;
+    }
 }
