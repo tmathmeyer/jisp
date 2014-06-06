@@ -38,9 +38,9 @@ public class EmptyTokenTree implements TokenTree
     }
 
     @Override
-    public void lock()
+    public TokenTree lock()
     {
-        
+        return this;
     }
     
     @Override

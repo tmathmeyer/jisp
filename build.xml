@@ -1,0 +1,80 @@
+<project name="jisp" default="main" basedir=".">
+	<property name="src.dir" location="src" />
+	<property name="test.dir" location="test" />
+	<property name="build.dir" location="build" />
+	<property name="dist.dir" location="dist" />
+	<property name="docs.dir" location="docs" />
+	<property name="lib.dir" location="lib" />
+	<property name="test.class.name" value="com.tmathmeyer.sexpr.ParserTest" />
+
+	<path id="test-classpath">
+		<pathelement path="dist/jisp.jar" />
+		<pathelement path="lib/junit.jar" />
+	</path>
+
+	<!-- Deletes the existing build, docs and dist directory-->
+	<target name="clean">
+		<delete dir="${build.dir}" />
+		<delete dir="${docs.dir}" />
+		<delete dir="${dist.dir}" />
+	</target>
+
+	<!-- Creates the  build, docs and dist directory-->
+	<target name="makedir">
+		<mkdir dir="${build.dir}" />
+		<mkdir dir="${docs.dir}" />
+		<mkdir dir="${dist.dir}" />
+	</target>
+
+	<!-- Compiles the java code -->
+	<target name="compile" depends="clean, makedir">
+		<javac srcdir="${src.dir}" destdir="${build.dir}" includeantruntime="false">
+		</javac>
+		<javac srcdir="${test.dir}" destdir="${build.dir}" includeantruntime="false">
+			<classpath refid="test-classpath"/>
+		</javac>
+	</target>
+
+	<target name="docs" depends="compile">
+		<javadoc packagenames="src" sourcepath="${src.dir}" destdir="${docs.dir}">
+			<!-- Define which files / directory should get included, we include all -->
+			<fileset dir="${src.dir}">
+				<include name="**" />
+			</fileset>
+		</javadoc>
+	</target>
+
+
+
+	<target name="jar" depends="compile">
+		<jar destfile="${dist.dir}/jisp.jar" basedir="${build.dir}">
+		</jar>
+	</target>
+
+
+
+	<path id="test.classpath">
+		<pathelement location="./build" />
+		<fileset dir="${lib.dir}">
+			<include name="**/*.jar" />
+		</fileset>
+		<fileset dir="${dist.dir}">
+			<include name="**/*.jar" />
+		</fileset>
+	</path>
+
+	<target name="test">
+		<junit fork="yes" haltonfailure="yes">
+			<test name="${test.class.name}" />
+			<formatter type="plain" usefile="false" />
+			<classpath refid="test.classpath" />
+		</junit>
+	</target>
+
+
+
+	<target name="main" depends="compile, jar, test">
+		<description>Main target</description>
+	</target>
+
+</project>

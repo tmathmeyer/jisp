@@ -2,3 +2,9 @@ bin/*
 .classpath
 .project
 .settings/*
+
+
+build-test/*
+build/*
+dist/*
+lib/*

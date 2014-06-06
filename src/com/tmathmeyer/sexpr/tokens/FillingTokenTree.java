@@ -56,7 +56,7 @@ public class FillingTokenTree implements TokenTree
     }
 
     @Override
-    public void lock()
+    public TokenTree lock()
     {
         if (last != null)
         {
@@ -67,6 +67,7 @@ public class FillingTokenTree implements TokenTree
         {
             tt.lock();
         }
+        return this;
     }
 
     @Override

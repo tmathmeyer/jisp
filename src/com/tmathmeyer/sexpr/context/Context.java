@@ -11,7 +11,7 @@ import com.tmathmeyer.sexpr.data.Pair;
 
 public class Context
 {
-    public static Map<String, Func> getDefaultHashMap()
+    public static Map<String, Func> getDefaultContext()
     {
         Map<String, Func> m = new HashMap<String, Func>();
 
@@ -395,7 +395,6 @@ public class Context
                     }
                     else
                     {
-                        Object evd = func.eval(ctx);
                         return makeLet((String) func.eval(ctx), null, null);
                     }
                 }

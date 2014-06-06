@@ -7,7 +7,7 @@ import com.tmathmeyer.sexpr.context.Func;
 public interface TokenTree
 {
     TokenTree add(Token t, int depth);
-    void lock();
+    TokenTree lock();
     Object eval(Map<String, Func> context) throws Exception;
 
     void print(int i);
