@@ -1,6 +1,6 @@
 JISP: a java lisp (scheme) interpreter
 
-~oh the nightmares~
+[![Build Status](https://travis-ci.org/tmathmeyer/jisp.svg?branch=master)](https://travis-ci.org/tmathmeyer/jisp)
 
 basic scheming to accomplish:
 
