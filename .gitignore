@@ -7,4 +7,3 @@ bin/*
 build-test/*
 build/*
 dist/*
-lib/*
