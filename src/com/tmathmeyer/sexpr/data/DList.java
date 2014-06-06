@@ -66,4 +66,13 @@ public class DList implements List
     {
         return rest;
     }
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public <T> java.util.LinkedList<T> asList()
+	{
+		java.util.LinkedList<T> rest = this.rest.asList();
+		rest.addFirst((T)first);
+		return rest;
+	}
 }

@@ -253,6 +253,10 @@ public class Context
             @Override
             public Object eval(Map<String, Func> map) throws Exception
             {
+            	if (olist == null)
+            	{
+            		return new DList(additional, new Empty());
+            	}
                 return new DList(additional, (com.tmathmeyer.sexpr.data.List) olist.eval(map));
             }
 

@@ -2,7 +2,10 @@ package com.tmathmeyer.sexpr;
 
 import static org.junit.Assert.*;
 
-import org.junit.Before;
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
+
 import org.junit.Test;
 
 import com.tmathmeyer.sexpr.data.DList;
@@ -154,6 +157,53 @@ public class ParserTest
 
         Object rangeResult = new Parser(realrange).parse();
         assertEquals(rangeResult.toString(), "[1,2,3,4,5,6,7,8,9,10]");
+    }
+    
+    @Test
+    public void classAct()
+    {
+    	String testcase = "(* 3 4)";
+        Integer out = new Parser(testcase).parse(Integer.class);
+        assertEquals(out, new Integer(12));
+    }
+    
+    @Test
+    public void classList()
+    {
+    	String testcase =
+    			"(begin (defun range (λ (start end) (cond (= start end) (∅) (#t) (let next (+ 1 start) (cons next (range next end)))))) (range 0 (* 2 5)))";
+        List<Integer> out = new Parser(testcase).parseAsList(Integer.class);
+        int should = 1;
+        for(Integer i : out)
+        {
+        	assertEquals(i, new Integer(should++));
+        }
+    }
+    
+    @Test
+    public void sourceBuilder()
+    {
+    	String[] program = {"(begin",
+                            "(defun range (λ (start end) (cond (= start end) (∅) (#t) (let next (+ 1 start) (cons next (range next end))))))",
+                            "(defun incriment (λ (value) (+ 1 value)))",
+                            "(defun square-L (λ (list) (cond (empty list) (∅)",
+                                                       "(#t) (let fir (first list)",
+                                                                 "(let res (rest list)",
+                                                                      "(let incr (* fir fir)",
+                                                                           "(cons incr (square-L res))))))))",
+                            "(defun 100 (* 5 4 4))",
+                            "(square-L (range 0 100)))"};
+    	
+    	List<String> prog = Arrays.asList(program);
+    	Parser p = Parser.buildParser(prog);
+    	Integer count = 1;
+    	for (Integer i : p.parseAsList(Integer.class))
+    	{
+    		assertEquals(i, new Integer(count*count));
+    		count++;
+    	}
+    	
+    	
     }
 
 }

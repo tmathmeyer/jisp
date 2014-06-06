@@ -25,7 +25,7 @@ public class Parser
 	
     public Parser(String string, boolean d)
     {
-		program = string;//removeAllDoubleSpaces(string);
+		program = removeAllDoubleSpaces(string);
 		tokens = tokenise(program);
 		TokenTree build = new EmptyTokenTree();
 		for(Token t : tokens)
@@ -72,7 +72,17 @@ public class Parser
     	return castType.cast(parse(context));
     }
     
-    public Parser buildParser(List<String> loc)
+    public <T> List<T> parseAsList(Class<T> castType)
+    {
+    	return parse(com.tmathmeyer.sexpr.data.List.class).asList();
+    }
+    
+    public <T> List<T> parseAsList(Class<T> castType, Map<String, Func> context)
+    {
+    	return parse(com.tmathmeyer.sexpr.data.List.class, context).asList();
+    }
+    
+    public static Parser buildParser(List<String> loc)
     {
     	StringBuilder program = new StringBuilder();
     	for(String line : loc)

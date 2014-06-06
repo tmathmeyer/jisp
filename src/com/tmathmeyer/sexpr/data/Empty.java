@@ -3,6 +3,7 @@ package com.tmathmeyer.sexpr.data;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.io.UnsupportedEncodingException;
+import java.util.LinkedList;
 
 public class Empty implements List
 {
@@ -51,4 +52,10 @@ public class Empty implements List
     {
         return this;
     }
+
+	@Override
+	public <T> java.util.LinkedList<T> asList()
+	{
+		return new LinkedList<T>();
+	}
 }
