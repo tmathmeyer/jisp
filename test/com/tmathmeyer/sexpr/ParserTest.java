@@ -49,6 +49,7 @@ public class ParserTest
     {
         String testcase = "(+ (+ 1 2 3) 4)";
         Object out = new Parser(testcase).parse();
+        assertTrue(false);
         assertEquals(out, 10);
     }
     
